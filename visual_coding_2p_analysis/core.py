@@ -29,11 +29,11 @@ save_path
     #     save_path = r'/allen/programs/braintv/workgroups/nc-ophys/Saskia/Visual Coding Event Analysis'
 
     if sys.platform == 'win32':
-        save_path = r'\\allen\programs\braintv\workgroups\nc-ophys\ObservatoryPlatformPaperAnalysis\analysis_files_pre_2018_3_29'
+        save_path = r'\\allen\programs\braintv\workgroups\nc-ophys\BehaviorImaging\DoC\EventDetection\analysis_files'
     elif sys.platform == 'darwin':
-        save_path = r'/Volumes/programs/braintv/workgroups/nc-ophys/ObservatoryPlatformPaperAnalysis/analysis_files_pre_2018_3_29'
+        save_path = r'/Volumes/programs/braintv/workgroups/nc-ophys/BehaviorImaging/DoC/EventDetection/analysis_files/'
     elif sys.platform == 'linux2':
-        save_path = '/allen/programs/braintv/workgroups/nc-ophys/ObservatoryPlatformPaperAnalysis/analysis_files_pre_2018_3_29'
+        save_path = '/allen/programs/braintv/workgroups/nc-ophys/BehaviorImaging/DoC/EventDetection/analysis_files/'
     return save_path
 
 
@@ -97,11 +97,11 @@ Returns
 manifest path
         '''
     if sys.platform=='win32':
-        manifest_path = r"\\allen\programs\braintv\workgroups\nc-ophys\ObservatoryPlatformPaperAnalysis\platform_boc_pre_2018_3_16\manifest.json"
+        manifest_path = r"\\allen\programs\braintv\workgroups\nc-ophys\BehaviorImaging\DoC\EventDetection\boc\manifest.json"
     elif sys.platform=='darwin':
-        manifest_path = r"/Volumes/programs/braintv/workgroups/nc-ophys/ObservatoryPlatformPaperAnalysis/platform_boc_pre_2018_3_16/manifest.json"
+        manifest_path = r"/Volumes/programs/braintv/workgroups/nc-ophys/BehaviorImaging/DoC/EventDetection/boc/manifest.json"
     elif sys.platform=='linux2':
-        manifest_path = r"/allen/programs/braintv/workgroups/nc-ophys/ObservatoryPlatformPaperAnalysis/platform_boc_pre_2018_3_16/manifest.json"
+        manifest_path = r"/allen/programs/braintv/workgroups/nc-ophys/BehaviorImaging/DoC/EventDetection/boc/manifest.json"
 
 
     return manifest_path
@@ -114,11 +114,11 @@ Returns
 cache path
         '''
     if sys.platform=='win32':
-        cache_path = r"\\allen\programs\braintv\workgroups\nc-ophys\ObservatoryPlatformPaperAnalysis\events_pre_2018_3_29"
+        cache_path = r"\\allen\programs\braintv\workgroups\nc-ophys\BehaviorImaging\DoC\EventDetection\events"
     elif sys.platform=='darwin':
-        cache_path = r'/Volumes/programs/braintv/workgroups/nc-ophys/ObservatoryPlatformPaperAnalysis/events_pre_2018_3_29/'
+        cache_path = r'/Volumes/programs/braintv/workgroups/nc-ophys/BehaviorImaging/DoC/EventDetection/events/'
     elif sys.platform=='linux2':
-        cache_path = r'/allen/programs/braintv/workgroups/nc-ophys/ObservatoryPlatformPaperAnalysis/events_pre_2018_3_29/'
+        cache_path = r'/allen/programs/braintv/workgroups/nc-ophys/BehaviorImaging/DoC/EventDetection/events/'
     return cache_path
 
 def get_event_path():
@@ -129,11 +129,11 @@ Returns
 event path
         '''
     if sys.platform=='win32':
-        event_path = r'\\allen\aibs\technology\allensdk_data\platform_events_pre_2018_3_19\events_2'
+        event_path = r"\\allen\programs\braintv\workgroups\nc-ophys\BehaviorImaging\DoC\EventDetection\events"
     elif sys.platform=='darwin':
-        event_path = r'/Volumes/aibs/technology/allensdk_data/platform_events_pre_2018_3_19/events_2'
+        event_path = r'/Volumes/programs/braintv/workgroups/nc-ophys/BehaviorImaging/DoC/EventDetection/events/'
     elif sys.platform=='linux2':
-        event_path = r'/allen/aibs/technology/allensdk_data/platform_events_pre_2018_3_19/events_2'
+        event_path = r'/allen/programs/braintv/workgroups/nc-ophys/BehaviorImaging/DoC/EventDetection/events/'
     return event_path
 
 def get_running_speed(session_id):
