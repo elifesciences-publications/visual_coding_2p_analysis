@@ -63,9 +63,11 @@ class L0_analysis:
             dataset = boc.get_ophys_experiment_data(ophys_experiment_id=dataset)
 
         try:
+            print 'getting meta from dataset'
             self.metadata = dataset.get_metadata()
             # dff_traces = dataset.get_dff_traces()[1]
             self.corrected_fluorescence_traces = dataset.get_corrected_fluorescence_traces()[1]
+            print 'got corrected traces'
         except:
             self.metadata = {'genotype':genotype, 'ophys_experiment_id':999}
             self.corrected_fluorescence_traces = dataset
@@ -117,18 +119,20 @@ class L0_analysis:
         #                                           str(self.median_filter_2) +
         #                                           str(self.halflife) +
         #                                           str(self.sample_rate_hz) +
-        #                                           str(self.L0_constrain) +
-        #                                           str(self.use_bisection))) + '_events.npz')
+        # #                                           str(self.L0_constrain) +
+        # #                                           str(self.use_bisection))) + '_events.npz')
 
-        return os.path.join(self.cache_directory, str(self.metadata['ophys_experiment_id']) +  '_' +
-                                                  str(self.event_min_size) + '_' +
-                                                  str(self.noise_scale) + '_' +
-                                                  str(self.median_filter_1) + '_' +
-                                                  str(self.median_filter_2) + '_' +
-                                                  str(self.halflife) + '_' +
-                                                  str(self.sample_rate_hz) + '_' +
-                                                  str(self.L0_constrain) + '_' +
-                                                  str(self.use_bisection) + '_events.npz')
+        # return os.path.join(self.cache_directory, str(self.metadata['ophys_experiment_id']) +  '_' +
+        #                                           str(self.event_min_size) + '_' +
+        #                                           str(self.noise_scale) + '_' +
+        #                                           str(self.median_filter_1) + '_' +
+        #                                           str(self.median_filter_2) + '_' +
+        #                                           str(self.halflife) + '_' +
+        #                                           str(self.sample_rate_hz) + '_' +
+        #                                           str(self.L0_constrain) + '_' +
+        #                                           str(self.use_bisection) + '_events.npz')
+
+        return os.path.join(self.cache_directory, str(self.metadata['ophys_experiment_id'])+'_events.npz')
 
     @property
     def dff_file(self):
@@ -139,12 +143,14 @@ class L0_analysis:
         #                                           str(self.halflife) +
         #                                           str(self.sample_rate_hz))) + '_dff.npz')
 
-        return os.path.join(self.cache_directory, str(self.metadata['ophys_experiment_id']) + '_' +
-                                                  str(self.noise_scale) + '_' +
-                                                  str(self.median_filter_1) + '_' +
-                                                  str(self.median_filter_2) + '_' +
-                                                  str(self.halflife) + '_' +
-                                                  str(self.sample_rate_hz) + '_dff.npz')
+        # return os.path.join(self.cache_directory, str(self.metadata['ophys_experiment_id']) + '_' +
+        #                                           str(self.noise_scale) + '_' +
+        #                                           str(self.median_filter_1) + '_' +
+        #                                           str(self.median_filter_2) + '_' +
+        #                                           str(self.halflife) + '_' +
+        #                                           str(self.sample_rate_hz) + '_dff.npz')
+        return os.path.join(self.cache_directory, str(self.metadata['ophys_experiment_id'])+'_dff.npz')
+
 
     @property
     def dff_traces(self):
