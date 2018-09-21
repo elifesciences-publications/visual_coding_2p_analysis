@@ -62,7 +62,7 @@ class L0_analysis:
                 boc = BrainObservatoryCache(manifest_file=manifest_file)
             dataset = boc.get_ophys_experiment_data(ophys_experiment_id=dataset)
 
-        print('extracting traces for',self.ophys_experiment_id)
+        print('extracting traces for',dataset.experiment_id)
         try:
             print('getting meta from dataset')
             self.metadata = dataset.get_metadata()
@@ -136,7 +136,7 @@ class L0_analysis:
         #                                           str(self.sample_rate_hz) + '_' +
         #                                           str(self.L0_constrain) + '_' +
         #                                           str(self.use_bisection) + '_events.npz')
-        ev_file = os.path.join(self.cache_directory, str(self.ophys_experiment_id)+'_events.npz')
+        ev_file = os.path.join(self.cache_directory, str(dataset.experiment_id)+'_events.npz')
         print(ev_file)
         return ev_file
 
@@ -155,7 +155,7 @@ class L0_analysis:
         #                                           str(self.median_filter_2) + '_' +
         #                                           str(self.halflife) + '_' +
         #                                           str(self.sample_rate_hz) + '_dff.npz')
-        dff_file = os.path.join(self.cache_directory, str(self.ophys_experiment_id)+'_dff.npz')
+        dff_file = os.path.join(self.cache_directory, str(dataset.experiment_id)+'_dff.npz')
         print(dff_file)
         return dff_file
 
