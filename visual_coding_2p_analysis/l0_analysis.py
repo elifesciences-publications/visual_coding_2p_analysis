@@ -271,7 +271,7 @@ class L0_analysis:
 
 
             for n, dff in enumerate(self.dff_traces):
-                if anp.isnan(dff).any():
+                if np.isnan(dff).any():
                     tmp = np.NaN*np.zeros(dff.shape)
                     self._lambdas.append(np.NaN)
                 else:
