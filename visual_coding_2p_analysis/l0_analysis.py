@@ -66,7 +66,7 @@ class L0_analysis:
             print 'getting meta from dataset'
             self.metadata = dataset.get_metadata()
             # dff_traces = dataset.get_dff_traces()[1]
-            self.corrected_fluorescence_traces = dataset.get_corrected_fluorescence_traces()[1]
+            self.corrected_fluorescence_traces = dataset.get_corrected_fluorescence_traces()
             print 'got corrected traces'
         except:
             self.metadata = {'genotype':genotype, 'ophys_experiment_id':999}
