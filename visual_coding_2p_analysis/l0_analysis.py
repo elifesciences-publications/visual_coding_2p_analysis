@@ -265,7 +265,7 @@ class L0_analysis:
             events = []
 
 
-            for n, dff in enumerate(self.dff_traces[0]):
+            for n, dff in enumerate(self.dff_traces):
                 if any(np.isnan(dff)):
                     tmp = np.NaN*np.zeros(dff.shape)
                     self._lambdas.append(np.NaN)
