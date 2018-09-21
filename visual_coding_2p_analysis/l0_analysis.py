@@ -270,7 +270,7 @@ class L0_analysis:
             events = []
 
 
-            for n, dff in enumerate(self.dff_traces):
+            for n, dff in enumerate(self.dff_traces[0]):
                 if np.isnan(dff).any():
                     tmp = np.NaN*np.zeros(dff.shape)
                     self._lambdas.append(np.NaN)
@@ -278,9 +278,9 @@ class L0_analysis:
                     tmp = dff[:]
 
                     if self.use_bisection:
-                        (tmp, l) = self.bisection(tmp, self.dff_traces[n], self.event_min_size)
+                        (tmp, l) = self.bisection(tmp, self.dff_traces[1][n], self.event_min_size)
                     else:
-                        (tmp, l) = self.bracket(tmp, self.dff_traces[n], 0, 10*self.noise_scale, .0001, self.event_min_size)
+                        (tmp, l) = self.bracket(tmp, self.dff_traces[1][n], 0, 10*self.noise_scale, .0001, self.event_min_size)
 
 
                     events.append(tmp)
