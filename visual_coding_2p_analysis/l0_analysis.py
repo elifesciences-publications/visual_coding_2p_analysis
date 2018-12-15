@@ -102,6 +102,7 @@ class L0_analysis:
 
         self._gamma = None
         self.lambdas = []
+        self._lambdas = []
         self.l0_func = None
 
     @property
