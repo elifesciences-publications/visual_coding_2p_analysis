@@ -54,6 +54,7 @@ class L0_analysis:
                        sample_rate_hz=30, genotype='Unknown', L0_constrain=False, cache_directory=None, use_cache=True, use_bisection=True):
 
         # manifest_file = core.get_manifest_path()
+        manifest_file = None
         self.experiment_id = dataset.experiment_id
 
         if type(dataset) is int:
