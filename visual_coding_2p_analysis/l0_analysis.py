@@ -53,7 +53,7 @@ class L0_analysis:
                        event_min_size=2., noise_scale=.1, median_filter_1=5401, median_filter_2=101, halflife_ms=None,
                        sample_rate_hz=30, genotype='Unknown', L0_constrain=False, cache_directory=None, use_cache=True, use_bisection=True):
 
-        manifest_file = core.get_manifest_path()
+        # manifest_file = core.get_manifest_path()
         self.experiment_id = dataset.experiment_id
 
         if type(dataset) is int:
