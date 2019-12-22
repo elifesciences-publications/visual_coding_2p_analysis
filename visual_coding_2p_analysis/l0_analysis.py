@@ -9,7 +9,7 @@ import _pickle as pickle
 import warnings
 import os
 import pandas as pd
-import core
+import visual_coding_2p_analysis.core as core
 
 # l0 = fast.arfpop
 medfilt = lambda x, s: median_filter(x, s, mode='constant')
