@@ -5,7 +5,7 @@ import numpy as np
 from scipy.ndimage.filters import median_filter
 import sys
 from allensdk.core.brain_observatory_cache import BrainObservatoryCache
-import _pickle as pickle
+import cPickle as pickle
 import warnings
 import os
 import pandas as pd
