@@ -49,13 +49,14 @@ class L0_analysis:
 
     """
     def __init__(self, dataset,
-                       event_min_size=1., median_filter_1=5401, median_filter_2=101, halflife_ms=None,
+                       event_min_size=1., median_filter_1=5401, median_filter_2=101, halflife_ms=None, cache_directory=None,
                        sample_rate_hz=30, genotype='Unknown', L0_constrain=True, use_cache=False, use_bisection=False):
 
         # manifest_file = core.get_manifest_path()
         manifest_file = None
         self.experiment_id = dataset.experiment_id
 
+        self.cache_directory = cache_directory
         self.use_cache = use_cache
         self.use_bisection = use_bisection
         self.median_filter_1 = median_filter_1
@@ -125,11 +126,6 @@ class L0_analysis:
         # self.l0_func = None
 
     @property
-    def l0(self):
-        if self.l0_func is None:
-            from FastLZeroSpikeInference import fast
-            self.l0_func = fast.arfpop
-
     def l0(self, dff, gamma, l, constraint):                                                                                                                          
         ev = fast.estimate_spikes(dff, gamma, l, constraint, estimate_calcium=True)                                                
         out = np.zeros(ev['dat'].shape)                                                                                                                               
