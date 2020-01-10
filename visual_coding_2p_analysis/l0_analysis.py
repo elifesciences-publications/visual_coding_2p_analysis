@@ -390,7 +390,7 @@ class L0_analysis:
             l = step
             s1 += step
         print(l)
-        tmp = self.l0(dff, self.gamma, l, self.L0_constrain)
+        tmp = self.l0(dff=dff, gamma=self.gamma, l=l, constraint=self.L0_constrain)
 
         if len(tmp[tmp > 0]) == 0 and bisect is True:
             return self.bracket(dff, n, s1 - 5*step, step, step_min, event_min_size)
