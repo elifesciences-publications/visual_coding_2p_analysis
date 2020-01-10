@@ -1,11 +1,11 @@
 from __future__ import print_function
 import numpy as np
-# from FastLZeroSpikeInference import fast
+from FastLZeroSpikeInference import fast
 # from scipy.signal import medfilt
 from scipy.ndimage.filters import median_filter
 import sys
 from allensdk.core.brain_observatory_cache import BrainObservatoryCache
-import _pickle as pickle
+import pickle
 import warnings
 import os
 import pandas as pd
@@ -26,9 +26,8 @@ class L0_analysis:
     ----------
     dataset : a dataset object (returned from get_ophys_experiment_data) or ophys_experiment_id or raw data
     event_min_size : smallest allowable event in units of noise std [default: 1.0]
-    noise_scale : dff traces are rescaled so that the noise std is this value [default: 0.1]
     median_filter_1 : the length of the window for long time scale median filter detrending to
-                      estimate dff from corrected_fluorescence_traces [default: 2001]
+                      estimate dff from corrected_fluorescence_traces [default: 5401]
     median_filter_2 : the length of the window for short time scale median filter detrending [default: 101]
     halflife_ms : half-life of the indicator in ms, used to override lookup [default: None]
     sample_rate_hz : sampling rate of data in Hz
@@ -50,12 +49,18 @@ class L0_analysis:
 
     """
     def __init__(self, dataset,
-                       event_min_size=2., noise_scale=.1, median_filter_1=5401, median_filter_2=101, halflife_ms=None,
-                       sample_rate_hz=30, genotype='Unknown', L0_constrain=False, cache_directory=None, use_cache=True, use_bisection=True):
+                       event_min_size=1., median_filter_1=5401, median_filter_2=101, halflife_ms=None,
+                       sample_rate_hz=30, genotype='Unknown', L0_constrain=True, use_cache=False, use_bisection=False):
 
         # manifest_file = core.get_manifest_path()
         manifest_file = None
         self.experiment_id = dataset.experiment_id
+
+        self.use_cache = use_cache
+        self.use_bisection = use_bisection
+        self.median_filter_1 = median_filter_1
+        self.median_filter_2 = median_filter_2
+        self.L0_constrain = L0_constrain
 
         if type(dataset) is int:
             if manifest_file is None:
@@ -73,12 +78,26 @@ class L0_analysis:
             print('got corrected traces')
         except:
             self.metadata = {'genotype':genotype, 'ophys_experiment_id':999}
-            self.corrected_fluorescence_traces = dataset
+            self._dff_traces = dataset
+            self.num_cells = self._dff_traces[0]
+            num_small_baseline_frames = []
+            noise_stds = []
 
-        self.num_cells = self.corrected_fluorescence_traces.shape[0]
+            for dff in self._dff_traces:
+                sigma_dff = self.noise_std(dff)
+                noise_stds.append(sigma_dff)
+
+                # short timescale detrending
+                tf = medfilt(dff, self.median_filter_2)
+                tf = np.minimum(tf, 2.5*sigma_dff)
+                dff -= tf
+                self.print('.', end='', flush=True)
+            self._noise_stds = noise_stds
+            self._num_small_baseline_frames = num_small_baseline_frames
+
+
         self.sample_rate_hz = sample_rate_hz
         self.event_min_size = event_min_size
-        self.noise_scale = noise_scale
 
         if halflife_ms is None:
             self.halflife = self.get_halflife()
@@ -103,16 +122,19 @@ class L0_analysis:
 
         self._gamma = None
         self.lambdas = []
-        self._lambdas = []
-        self.l0_func = None
+        # self.l0_func = None
 
     @property
     def l0(self):
         if self.l0_func is None:
             from FastLZeroSpikeInference import fast
-            self.l0_func = fast.estimate_spikes
+            self.l0_func = fast.arfpop
 
-        return self.l0_func
+    def l0(self, dff, gamma, l, constraint):                                                                                                                          
+        ev = fast.estimate_spikes(dff, gamma, l, constraint, estimate_calcium=True)                                                
+        out = np.zeros(ev['dat'].shape)                                                                                                                               
+        out[ev['spikes']-1] = ev['pos_spike_mag']                                                                                  
+        return out 
 
     @property
     def trace_info_file(self):
@@ -165,7 +187,7 @@ class L0_analysis:
 
     @property
     def dff_traces(self):
-        if self._dff_traces is None and os.path.isfile(self.dff_file) and self.use_cache:
+        if self.use_cache and self._dff_traces is None and os.path.isfile(self.dff_file):
             self._dff_traces = np.load(self.dff_file)['dff']
             self._noise_stds = np.load(self.dff_file)['noise_stds']
             self._num_small_baseline_frames = np.load(self.dff_file)['num_small_baseline_frames']
@@ -263,7 +285,7 @@ class L0_analysis:
         if use_bisection is not None:
             self.use_bisection = use_bisection
 
-        if os.path.isfile(self.evfile) and self.use_cache:
+        if self.use_cache and os.path.isfile(self.evfile):
             events = np.load(self.evfile)['ev']
         else:
 
@@ -275,14 +297,14 @@ class L0_analysis:
             for n, dff in enumerate(self.dff_traces[0]):
                 if np.isnan(dff).any():
                     tmp = np.NaN*np.zeros(dff.shape)
-                    self._lambdas.append(np.NaN)
+                    self.lambdas.append(np.NaN)
                 else:
                     tmp = dff[:]
 
                     if self.use_bisection:
                         (tmp, l) = self.bisection(tmp, self.dff_traces[1][n], self.event_min_size)
                     else:
-                        (tmp, l) = self.bracket(tmp, self.dff_traces[1][n], 0, 10*self.noise_scale, .0001, self.event_min_size)
+                        (tmp, l) = self.bracket(tmp, self.dff_traces[1][n], 0, 1, .0001, self.event_min_size)
 
 
                     events.append(tmp)
@@ -296,22 +318,22 @@ class L0_analysis:
         return np.array(events)
 
 
-    def bisection(self, dff, n, event_min_size, left=0., right=1., max_its=100, eps=.0001):
+    def bisection(self, dff, n, event_min_size, left=0., right=5., max_its=100, eps=.0001):
 
         # find right endpoint with no events
-        tmp_right = self.l0(dff, self.gamma, right, self.L0_constrain)['pos_spike_mag']
+        tmp_right = self.l0(dff, self.gamma, right, self.L0_constrain)
         nz_right = (tmp_right > 0)
 
-        it = 0
-        while it <= 20:
-            it += 1
+        # it = 0
+        # while it <= 20:
+        #     it += 1
 
-            if np.sum(nz_right) > 0:
-                right *= 2
-                tmp_right = self.l0(dff, self.gamma, right, self.L0_constrain)['pos_spike_mag']
-                nz_right = (tmp_right > 0)
-            else:
-                break
+        #     if np.sum(nz_right) > 0:
+        #         right *= 2
+        #         tmp_right = self.l0(dff, self.gamma, right, self.L0_constrain)
+        #         nz_right = (tmp_right > 0)
+        #     else:
+        #         break
 
         # bisection for lambda minimizing num events < min size
         it = 0
@@ -323,15 +345,15 @@ class L0_analysis:
 
             mid = left + (right - left) / 2.
 
-            tmp_left = self.l0(dff, self.gamma, left, self.L0_constrain)['pos_spike_mag']
+            tmp_left = self.l0(dff, self.gamma, left, self.L0_constrain)
             nz_left = (tmp_left > 0)
             num_small_events_left = np.sum(tmp_left[nz_left] < n*event_min_size)
 
             if num_small_events_left == 0:
                 break
             else:
-                tmp_mid = self.l0(dff, self.gamma, mid, self.L0_constrain)['pos_spike_mag']
-                tmp_right = self.l0(dff, self.gamma, right, self.L0_constrain)['pos_spike_mag']
+                tmp_mid = self.l0(dff, self.gamma, mid, self.L0_constrain)
+                tmp_right = self.l0(dff, self.gamma, right, self.L0_constrain)
 
                 nz_mid = (tmp_mid > 0)
                 nz_right = (tmp_right > 0)
@@ -372,7 +394,7 @@ class L0_analysis:
             l = step
             s1 += step
         print(l)
-        tmp = self.l0(dff, self.gamma, l, self.L0_constrain)['pos_spike_mag']
+        tmp = self.l0(dff, self.gamma, l, self.L0_constrain)
 
         if len(tmp[tmp > 0]) == 0 and bisect is True:
             return self.bracket(dff, n, s1 - 5*step, step, step_min, event_min_size)
@@ -385,7 +407,7 @@ class L0_analysis:
                     lasttmp = tmp[:]
                     l += step
                     print(l)
-                    tmp = self.l0(dff, self.gamma, l, self.L0_constrain)['pos_spike_mag']
+                    tmp = self.l0(dff, self.gamma, l, self.L0_constrain)
                 if len(tmp[tmp > 0]) == 0:
                     return (lasttmp, l-step)
                 else:
