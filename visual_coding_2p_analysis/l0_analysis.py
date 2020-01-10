@@ -125,7 +125,7 @@ class L0_analysis:
         self.lambdas = []
         # self.l0_func = None
 
-    @property
+    # @property
     def l0(self, dff, gamma, l, constraint):                                                                                                                          
         ev = fast.estimate_spikes(dff, gamma, l, constraint, estimate_calcium=True)                                                
         out = np.zeros(ev['dat'].shape)                                                                                                                               
