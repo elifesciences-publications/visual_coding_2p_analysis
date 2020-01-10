@@ -11,7 +11,7 @@ import os
 import pandas as pd
 import visual_coding_2p_analysis.core as core
 
-# l0 = fast.arfpop
+# l0 = fast.estimate_spikes
 medfilt = lambda x, s: median_filter(x, s, mode='constant')
 
 class L0_analysis:
@@ -110,7 +110,7 @@ class L0_analysis:
     def l0(self):
         if self.l0_func is None:
             from FastLZeroSpikeInference import fast
-            self.l0_func = fast.arfpop
+            self.l0_func = fast.estimate_spikes
 
         return self.l0_func
 
