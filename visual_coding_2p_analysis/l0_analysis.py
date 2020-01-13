@@ -49,7 +49,7 @@ class L0_analysis:
 
     """
     def __init__(self, dataset,
-                       event_min_size=2., noise_scale=.1, median_filter_1=5401, median_filter_2=101, halflife_ms=None, cache_directory=None,
+                       event_min_size=1., noise_scale=.1, median_filter_1=5401, median_filter_2=101, halflife_ms=None, cache_directory=None,
                        sample_rate_hz=30, genotype='Unknown', L0_constrain=False, use_cache=True, use_bisection=True):
 
         # manifest_file = core.get_manifest_path()
